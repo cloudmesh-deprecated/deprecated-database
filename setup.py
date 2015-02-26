@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-version = "2.1.2"
+version = "1.0.0"
 
 #from distutils.core import setup
 
@@ -10,13 +10,9 @@ import glob
 import os
 from cloudmesh_base.base import banner
 
-banner("Installing Cloudmesh Base")
+banner("Installing Cloudmesh Database Utils")
 
 home = os.path.expanduser("~")
-
-#
-# MANAGE VERSION NUMBER
-#
 
 #
 # read
@@ -68,7 +64,7 @@ class InstallAll(install):
 setup(
     name='cloudmesh_database',
     version=version,
-    description='A set simple database functions to manage a mongo db for programs',
+    description='A set of simple database functions to manage a mongo db for programs',
     # description-file =
     #    README.rst
     author='The Cloudmesh Team',
