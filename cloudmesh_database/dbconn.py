@@ -137,7 +137,8 @@ class dbconf(ConfigDict):
         ConfigDict.__init__(self, filename=filename)
 
 # ----------------------------------------------------------------------
-# MAIN METHOD FOR TESTING
+# MAIN METHOD FOR TESTING and example to use
+# See also examples in the examples directory
 # ----------------------------------------------------------------------
 def main():
     from cloudmesh_database.dbconn import get_mongo_db, get_mongo_dbname_from_collection, DBConnFactory

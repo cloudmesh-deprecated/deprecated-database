@@ -9,6 +9,9 @@ from setuptools.command.install import install
 import glob
 import os
 from cloudmesh_base.base import banner
+from cloudmesh_base.Shell import Shell
+from cloudmesh_base.util import path_expand
+import shutil
 
 banner("Installing Cloudmesh Database Utils")
 
@@ -60,7 +63,24 @@ class InstallAll(install):
         os.system("pip install -r requirements.txt")
         banner("Install Cloudmesh Database")        
         install.run(self)
+
+class SetupYaml(install):
+    """Upload the package to pypi."""
+    def run(self):
+        banner("Setup the cloudmesh_database.yaml file")
+
+        database_yaml = path_expand("~/.cloudmesh/cloudmesh_database.yaml")
         
+        if os.path.isfile(database_yaml):
+            print ("WARNING: the file {0} already exists".format(database_yaml))
+            print
+            print ("If you like to reinstall it, please remove the file")
+        else:
+            print ("Copy file:  {0} -> {1} ".format(path_expand("etc/cloudmesh_database.yaml"), database_yaml))
+            Shell.mkdir(path_expand("~/.cloudmesh"))
+            
+            shutil.copy("etc/cloudmesh_database.yaml", path_expand("~/.cloudmesh/cloudmesh_database.yaml"))
+                    
 setup(
     name='cloudmesh_database',
     version=version,
@@ -96,7 +116,8 @@ setup(
         'requirements': InstallRequirements,
         'all': InstallAll,
         'pypi': UploadToPypi,
-        'pypiregister': RegisterWithPypi,        
+        'pypiregister': RegisterWithPypi,
+        'yaml': SetupYaml,       
         },
 )
 
