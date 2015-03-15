@@ -47,3 +47,5 @@ cloudmesh:
                     db: cloudmesh
                 experiment:
                     db: cloudmeshobj
+                example:
+                    db: exampledb
