@@ -8,7 +8,7 @@ from setuptools import setup, find_packages
 from setuptools.command.install import install
 import glob
 import os
-from cloudmesh_base.base import banner
+from cloudmesh_base.util import banner
 
 banner("Installing Cloudmesh Database Utils")
 
