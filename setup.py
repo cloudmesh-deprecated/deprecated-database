@@ -1,76 +1,116 @@
 #!/usr/bin/env python
 
-version = "1.0.1"
+version = "1.0.2"
 
-#from distutils.core import setup
+requirements =     [
+    'cloudmesh_base',
+    'sh',
+    'simplejson',
+    'pyaml',
+    'pymongo',
+    'mongoengine',
+]
+# from distutils.core import setup
 
 from setuptools import setup, find_packages
 from setuptools.command.install import install
 import glob
 import os
-from cloudmesh_base.util import banner
-from cloudmesh_base.Shell import Shell
-from cloudmesh_base.util import path_expand
 import shutil
+
+try:
+    from cloudmesh_base.util import banner
+except:
+    os.system("pip install cloudmesh_base")
+
+from cloudmesh_base.util import banner
+from cloudmesh_base.util import path_expand
+from cloudmesh_base.Shell import Shell
+from cloudmesh_base.util import auto_create_version
+from cloudmesh_base.util import auto_create_requirements
+
 
 banner("Installing Cloudmesh Database Utils")
 
 home = os.path.expanduser("~")
 
-#
-# read
-#
-with open("cloudmesh_database/__init__.py", "r") as f:
-    content = f.read()
+auto_create_version("cloudmesh_database", version)
+auto_create_requirements(requirements)
 
-if content != 'version = "{0}"'.format(version):
-    banner("Updating version to {0}".format(version))
-    with open("cloudmesh_database/__init__.py", "w") as text_file:
-        text_file.write('version="%s"' % version)
+
+class CreateRequirementsFile(install):
+    """Create the requiremnets file."""
+
+    def run(self):
+        auto_create_requirements(requirements)
 
 
 class UploadToPypi(install):
     """Upload the package to pypi."""
+
     def run(self):
-        os.system("Make clean Install")
-        os.system("python setup.py install")                
+        auto_create_version("cloudmesh_database", version)
+        auto_create_requirements(requirements)
+        os.system("make clean")
+        os.system("python setup.py install")
         banner("Build Distribution")
-        os.system("python setup.py sdist --format=bztar,zip upload")        
+        os.system("python setup.py sdist --format=bztar,zip upload")
+
 
 class RegisterWithPypi(install):
     """Upload the package to pypi."""
+
     def run(self):
         banner("Register with Pypi")
-        os.system("python setup.py register")        
+        os.system("python setup.py register")
 
-        
+
 class InstallBase(install):
     """Install the package."""
+
     def run(self):
-        banner("Install Cloudmesh Database")
+        auto_create_version("cloudmesh_database", version)
+        auto_create_requirements(requirements)
+        banner("Install Cloudmesh Base")
         install.run(self)
+
 
 class InstallRequirements(install):
     """Install the requirements."""
+
     def run(self):
         banner("Install Cloudmesh Database Requirements")
         os.system("pip install -r requirements.txt")
-        
+
+
 class InstallAll(install):
     """Install requirements and the package."""
+
     def run(self):
-        banner("Install Cloudmesh Database Requirements")
+        banner("Install Cloudmesh Databse Requirements")
         os.system("pip install -r requirements.txt")
-        banner("Install Cloudmesh Database")        
+        banner("Install Cloudmesh Base")
         install.run(self)
+
+
+class CreateDoc(install):
+    """Install requirements and the package."""
+
+    def run(self):
+        banner("Create Documentation")
+        os.system("python setup.py install")
+        os.system("sphinx-apidoc -o docs/source cloudmesh_database ")
+        os.system("cd docs; make -f Makefile html")
+
 
 class SetupYaml(install):
     """Upload the package to pypi."""
+
     def run(self):
         banner("Setup the cloudmesh_database.yaml file")
 
         database_yaml = path_expand("~/.cloudmesh/cloudmesh_database.yaml")
-        
+
         if os.path.isfile(database_yaml):
             print ("WARNING: the file {0} already exists".format(database_yaml))
             print
@@ -78,9 +118,10 @@ class SetupYaml(install):
         else:
             print ("Copy file:  {0} -> {1} ".format(path_expand("etc/cloudmesh_database.yaml"), database_yaml))
             Shell.mkdir(path_expand("~/.cloudmesh"))
-            
+
             shutil.copy("etc/cloudmesh_database.yaml", path_expand("~/.cloudmesh/cloudmesh_database.yaml"))
-                    
+
+
 setup(
     name='cloudmesh_database',
     version=version,
@@ -117,6 +158,6 @@ setup(
         'all': InstallAll,
         'pypi': UploadToPypi,
         'pypiregister': RegisterWithPypi,
-        'yaml': SetupYaml,       
-        },
+        'yaml': SetupYaml,
+    },
 )
